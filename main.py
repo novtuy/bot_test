@@ -4,7 +4,7 @@ import logging
 import os
 
 # Включаем логирование
-# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 # Токен бота
 API_TOKEN = os.getenv("BOT_TOKEN")
