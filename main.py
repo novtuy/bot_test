@@ -1,29 +1,33 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.filters import Command
+import asyncio
 import logging
 import os
 
-# Включаем логирование
 logging.basicConfig(level=logging.INFO)
 
-# Токен бота
 API_TOKEN = os.getenv("BOT_TOKEN")
 
-# Создаем объекты бота и диспетчера
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 # Команда /start
-@dp.message_handler(commands=["start"])
-async def cmd_start(message: types.Message):
-    await message.reply("Привет! Я бот-повторялка. Напиши мне что-нибудь — и я повторю!")
+@dp.message(Command(commands=["start"]))
+async def start(msg: types.Message):
+    await msg.answer("Привет! Я бот-повторялка. Напиши что-нибудь — и я повторю!")
 
-# Все остальные сообщения
-@dp.message_handler()
-async def echo_message(message: types.Message):
-    # Просто повторяем текст пользователя
-    await message.reply(message.text)
+# Эхо всех сообщений
+@dp.message()
+async def echo(msg: types.Message):
+    await msg.answer(msg.text)
 
 # Запуск бота
+async def main():
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await bot.session.close()
+
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
